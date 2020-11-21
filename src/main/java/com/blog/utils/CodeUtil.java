@@ -1,6 +1,7 @@
 package com.blog.utils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class CodeUtil {
     /**
@@ -25,14 +26,14 @@ public class CodeUtil {
     }
     /**
      * 验证码校验
-     * @param request
+     * @param session
      * @return
      */
-    public static boolean checkVerifyCode(HttpServletRequest request) {
+    public static boolean checkVerifyCode(HttpSession session, String key) {
         //获取生成的验证码
-        String verifyCodeExpected = (String) request.getSession().getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
+        String verifyCodeExpected = (String) session.getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
         //获取用户输入的验证码
-        String verifyCodeActual = CodeUtil.getString(request, "verifyCodeActual");
+        String verifyCodeActual = key;
         if(verifyCodeActual == null ||!verifyCodeActual.equals(verifyCodeExpected)) {
             return false;
         }

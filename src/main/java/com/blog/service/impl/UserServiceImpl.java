@@ -43,4 +43,15 @@ public class UserServiceImpl implements UserService {
         result.put("errorInfo",errorInfo);
         return result;
     }
+
+    /**
+     * @param account  账号
+     * @param password 密码
+     * @return User
+     * @Description: 登录
+     */
+    @Override
+    public User login(String account, String password) {
+        return userMapper.login(account,password);
+    }
 }

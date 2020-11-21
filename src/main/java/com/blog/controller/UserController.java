@@ -5,14 +5,13 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.blog.pojo.User;
 import com.blog.service.impl.AliyunSmsSenderServiceImpl;
 import com.blog.service.impl.UserServiceImpl;
+import com.blog.utils.CodeUtil;
 import com.blog.utils.RedisUtils;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import javax.imageio.ImageIO;
@@ -27,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 @ResponseBody
+//@CrossOrigin(origins = "http://localhost:8088",allowCredentials = "true")
 public class UserController {
     @Autowired
     private Producer captchaProducer = null;
@@ -42,14 +42,15 @@ public class UserController {
     }
 
     @RequestMapping("/createImageCode")
-    public void createImageCode(HttpServletRequest request, HttpServletResponse response)
+    public void createImageCode(HttpSession session, HttpServletResponse response)
             throws Exception {
         byte[] captchaChallengeAsJpeg = null;
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
         try {
             // 生产验证码字符串并保存到session中
             String createText = captchaProducer.createText();
-            request.getSession().setAttribute("imageCode", createText);
+            session.setAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY, createText);
+
             // 使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
             BufferedImage challenge = captchaProducer.createImage(createText);
             ImageIO.write(challenge, "jpg", jpegOutputStream);
@@ -90,7 +91,7 @@ public class UserController {
         String validCode = (String)redisUtils.get(param.get("uuid"));
         user.setId(UUID.randomUUID().toString());
         user.setAccount(param.get("account"));
-        user.setPassword(param.get("password"));
+        user.setPassword(DigestUtils.md5DigestAsHex(param.get("password").getBytes()));
         user.setUserName(param.get("userName"));
         user.setPhoneNumber(param.get("moblieNumber"));
         returnData = userService.existsUserInfo(user);
@@ -111,5 +112,31 @@ public class UserController {
             returnData.put("errorInfo",errorInfo);
         }
             return returnData;
+    }
+    @RequestMapping("/login")
+    public Map<String,String> login(@RequestBody Map<String, String> param,HttpSession session,HttpServletRequest request) {
+        String errorInfo = "ok";
+        Map<String,String> result = new HashMap<String, String>();
+        if(CodeUtil.checkVerifyCode(session,param.get("validCode"))) {
+            User user = null;
+            try {
+                user = userService.login(param.get("account"), DigestUtils.md5DigestAsHex(param.get("password").getBytes()));
+            } catch (Exception e) {
+                errorInfo = e.getMessage();
+                result.put("errorInfo", errorInfo);
+                return result;
+            }
+            if(user == null){
+                errorInfo = "账号或密码输入有误！";
+                result.put("errorInfo", errorInfo);
+            }else {
+                session.setAttribute("loginUser", user);
+            }
+            return result;
+        }else{
+            errorInfo = "验证码输入有误！";
+            result.put("errorInfo", errorInfo);
+            return result;
+        }
     }
 }

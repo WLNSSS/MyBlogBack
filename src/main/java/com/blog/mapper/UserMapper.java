@@ -22,6 +22,6 @@ public interface UserMapper {
     public int existsUserAccount(User user);
     @Select({" select count(id) from user where phoneNumber = #{phoneNumber}"})
     public int existsUserPhone(User user);
-    @Select({" select count(id) from user where account = #{account} and password = #{password}"})
-    public boolean loginCheck(@Param("account") String account, @Param("password")String password);
+    @Select({" select account,username,phonenumber from user where account = #{account} and password = #{password}"})
+    public User login(@Param("account") String account, @Param("password")String password);
 }

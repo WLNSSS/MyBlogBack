@@ -15,7 +15,15 @@ public interface UserService {
     /**
      * @param user 查看是否存在相同账号、用户名、手机号的用户
      * @Description: 注册用户
-     * @return
+     * @return Map<String, List<String>>
      */
     Map<String, List<String>> existsUserInfo(User user);
+
+    /**
+     * @param account 账号
+     * @param password 密码
+     * @Description: 登录
+     * @return User
+     */
+    User login(String account,String password);
 }
