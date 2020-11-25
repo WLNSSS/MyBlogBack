@@ -20,4 +20,5 @@ public class Paper {
     private String paperPicture;
     private String paperTextId;
     private String paperText;
+    private String papertitle;
 }
