@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +42,17 @@ public class BlogServiceImpl implements BlogService {
         Map<String,String> result = new HashMap<String, String>();
         blogMapper.InsertPaperText(paper);
         blogMapper.InsertPaper(paper);
+        return result;
+    }
+
+    /**
+     * @param id userId
+     * @Description: 返回主页显示的内容
+     */
+    @Override
+    public Map<String, Object> searchSimplyPaper(String id) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("returnData",blogMapper.searchSimplyPaper(id));
         return result;
     }
 }

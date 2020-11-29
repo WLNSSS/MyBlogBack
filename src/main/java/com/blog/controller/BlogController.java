@@ -40,10 +40,14 @@ public class BlogController {
         paper.setId(UUID.randomUUID().toString());
         paper.setPaperPicture(param.get("paperPicture"));
         paper.setPaperText(param.get("paperText"));
-        paper.setPapertitle(param.get("paperText"));
+        paper.setPapertitle(param.get("paperTitle"));
         paper.setPaperTextId(UUID.randomUUID().toString());
         paper.setTime(new Date());
         paper.setUserId(((User)session.getAttribute("loginUser")).getId());
         return blogServiceImpl.saveNewpaper(paper);
+    }
+    @RequestMapping("/searchSimplyPaper")
+    public Map<String,Object> searchSimplyPaper(HttpSession session){
+        return blogServiceImpl.searchSimplyPaper(((User)session.getAttribute("loginUser")).getId());
     }
 }

@@ -102,7 +102,7 @@ public class UserController {
         if(param.get("messageNumber").equals(validCode)) {
             try {
                 userService.register(user);
-                session.setAttribute("loginUser",user.getUserName());
+                session.setAttribute("loginUser",user);
             }catch (Exception e){
                 errorInfo.add("数据库插入失败！");
                 returnData.put("errorInfo",errorInfo);

@@ -3,6 +3,7 @@ package com.blog.service;
 import com.blog.pojo.Paper;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 public interface BlogService {
@@ -17,4 +18,10 @@ public interface BlogService {
      * @Description: 创建新的文章
      */
     public Map<String,String> saveNewpaper(Paper paper);
+
+    /**
+     * @param id userId
+     * @Description: 创建新的文章
+     */
+    public Map<String, Object> searchSimplyPaper(String id);
 }
